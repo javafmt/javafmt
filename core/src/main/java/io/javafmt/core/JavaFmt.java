@@ -40,7 +40,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @since 0.1.0
  */
-public final class JavaFmt {
+public class JavaFmt {
 
     /**
      * Tests whether the given files are well formatted.

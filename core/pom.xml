@@ -29,8 +29,52 @@
   <description>Core library providing reusable Java code formatting facilities</description>
 
   <properties>
+    <!-- Build properties -->
+    <build.version>${project.version}</build.version>
+    <build.timestamp>${maven.build.timestamp}</build.timestamp>
+    <build.hash>${git.commit.id}</build.hash>
+
+    <!-- Dependency versions -->
     <javaparser.version>3.6.1</javaparser.version>
   </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>templating-maven-plugin</artifactId>
+        <version>1.0.0</version>
+        <executions>
+          <execution>
+            <id>filtering-java-templates</id>
+            <goals>
+              <goal>filter-sources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+          </execution>
+        </executions>
+
+        <configuration>
+          <commitIdGenerationMode>flat</commitIdGenerationMode>
+          <gitDescribe>
+            <skip>true</skip>
+          </gitDescribe>
+        </configuration>
+
+      </plugin>
+    </plugins>
+  </build>
 
   <dependencies>
     <dependency>
@@ -53,8 +97,12 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>1.8.4</version>
     </dependency>
   </dependencies>
 </project>
