@@ -16,11 +16,15 @@
 
 package io.javafmt.core;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,12 +33,28 @@ public class JavaFmtTest {
 
     private File wellformatted;
 
+    private File wellformattedCopy;
+
     private File missformatted;
+
+    private File missformattedCopy;
+
+    private File missformattedExpected;
+
+    @Rule
+    public TemporaryFolder tmpFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
         wellformatted = getFile("Wellformatted.java");
         missformatted = getFile("Missformatted.java");
+        missformattedExpected = getFile("Missformatted_expected.java");
+
+        missformattedCopy = tmpFolder.newFile("Missformatted_copy.java");
+        FileUtils.copyFile(missformatted, missformattedCopy);
+
+        wellformattedCopy = tmpFolder.newFile("Wellformatted_copy.java");
+        FileUtils.copyFile(wellformatted, wellformattedCopy);
     }
 
     private File getFile(final String fileName) throws URISyntaxException {
@@ -54,5 +74,19 @@ public class JavaFmtTest {
     @Test
     public void should_detect_single_wellformatted_file() {
         assertTrue(new JavaFmt().test(wellformatted));
+    }
+
+    @Test
+    public void should_format_missformatted_file() throws Exception {
+        new JavaFmt().format(missformattedCopy);
+
+        assertTrue(FileUtils.contentEquals(missformattedExpected, missformattedCopy));
+    }
+
+    @Test
+    public void should_not_change_wellformatted_file() throws Exception {
+        new JavaFmt().format(wellformattedCopy);
+
+        assertTrue(FileUtils.contentEquals(wellformatted, wellformattedCopy));
     }
 }

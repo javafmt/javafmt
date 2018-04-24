@@ -13,19 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.javafmt.core;
 
-public
-class Missformatted{
+public class Missformatted {
 
-    private int field
-            = 5;
+    private int field = 5;
 
-    public int method(
-
-    )
-            {
-return i + 1;
+    public int method() {
+        return i + 1;
     }
 }

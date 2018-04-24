@@ -86,4 +86,46 @@ public final class JavaFmt {
 
         return fileContent.equals(parsed.toString());
     }
+
+    /**
+     * Format the given files overriding their contents with the formatting result.
+     *
+     * <p>
+     * <strong>Note:</strong> This method assumes UTF-8 encoding.
+     * </p>
+     *
+     * @param files the files to format.
+     * @see #format(Charset, File...)
+     */
+    public void format(File... files) {
+        format(StandardCharsets.UTF_8, files);
+    }
+
+    /**
+     * Format the given files using the given Charset.
+     *
+     * @param charset the Charset to use for reading the files.
+     * @param files the files to format.
+     */
+    public void format(Charset charset, File... files) {
+        for (File file : files) {
+            formatFile(charset, file);
+        }
+    }
+
+    private void formatFile(Charset charset, File file) {
+        try {
+            String fileContent = FileUtils.readFileToString(file, charset);
+            String formatted = format(fileContent);
+            FileUtils.write(file, formatted, charset);
+        } catch (IOException iox) {
+            // ignore
+        }
+    }
+
+    private String format(String fileContent) {
+        CompilationUnit parsed = JavaParser.parse(fileContent);
+
+        return parsed.toString();
+    }
 }
