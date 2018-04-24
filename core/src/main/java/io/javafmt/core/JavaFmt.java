@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.javafmt;
+package io.javafmt.core;
 
 public class JavaFmt {
 }
