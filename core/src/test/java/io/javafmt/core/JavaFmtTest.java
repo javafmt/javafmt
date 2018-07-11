@@ -17,19 +17,15 @@
 package io.javafmt.core;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class JavaFmtTest {
+class JavaFmtTest {
 
     private File wellformatted;
 
@@ -41,19 +37,18 @@ public class JavaFmtTest {
 
     private File missformattedExpected;
 
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
+    @BeforeEach
+    void setUp() throws Exception {
+        File tempDirectory = FileUtils.getTempDirectory();
 
-    @Before
-    public void setUp() throws Exception {
         wellformatted = getFile("Wellformatted.java");
         missformatted = getFile("Missformatted.java");
         missformattedExpected = getFile("Missformatted_expected.java");
 
-        missformattedCopy = tmpFolder.newFile("Missformatted_copy.java");
+        missformattedCopy = new File(tempDirectory, "Missformatted_copy.java");
         FileUtils.copyFile(missformatted, missformattedCopy);
 
-        wellformattedCopy = tmpFolder.newFile("Wellformatted_copy.java");
+        wellformattedCopy = new File(tempDirectory, "Wellformatted_copy.java");
         FileUtils.copyFile(wellformatted, wellformattedCopy);
     }
 
@@ -62,31 +57,31 @@ public class JavaFmtTest {
     }
 
     @Test
-    public void should_detect_single_missformatted_file() {
-        assertFalse(new JavaFmt().test(missformatted));
+    void should_detect_single_missformatted_file() {
+        assertThat(new JavaFmt().test(missformatted)).isFalse();
     }
 
     @Test
-    public void should_detect_single_missformatted_file_among_well_formatted_files() {
-        assertFalse(new JavaFmt().test(wellformatted, missformatted, wellformatted));
+    void should_detect_single_missformatted_file_among_well_formatted_files() {
+        assertThat(new JavaFmt().test(wellformatted, missformatted, wellformatted)).isFalse();
     }
 
     @Test
-    public void should_detect_single_wellformatted_file() {
-        assertTrue(new JavaFmt().test(wellformatted));
+    void should_detect_single_wellformatted_file() {
+        assertThat(new JavaFmt().test(wellformatted)).isTrue();
     }
 
     @Test
-    public void should_format_missformatted_file() throws Exception {
+    void should_format_missformatted_file() {
         new JavaFmt().format(missformattedCopy);
 
-        assertTrue(FileUtils.contentEquals(missformattedExpected, missformattedCopy));
+        assertThat(missformattedCopy).hasSameContentAs(missformattedExpected);
     }
 
     @Test
-    public void should_not_change_wellformatted_file() throws Exception {
+    void should_not_change_wellformatted_file() {
         new JavaFmt().format(wellformattedCopy);
 
-        assertTrue(FileUtils.contentEquals(wellformatted, wellformattedCopy));
+        assertThat(wellformattedCopy).hasSameContentAs(wellformatted);
     }
 }

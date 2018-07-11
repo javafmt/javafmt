@@ -18,23 +18,22 @@ package io.javafmt.cli;
 
 import io.javafmt.core.JavaFmt;
 import org.apache.commons.io.output.WriterOutputStream;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.PrintStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 
-@RunWith(MockitoJUnitRunner.class)
-public class MainTest {
+@ExtendWith(MockitoExtension.class)
+class MainTest {
 
     @Mock
     private JavaFmt javaFmt;
@@ -45,8 +44,8 @@ public class MainTest {
 
     private PrintStream output;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() {
         writer = new StringWriter();
         WriterOutputStream os = new WriterOutputStream(writer, StandardCharsets.UTF_8);
 
@@ -55,40 +54,40 @@ public class MainTest {
     }
 
     @Test
-    public void should_show_help_when_help_option_is_passed() {
-        int existCode = runWithArgs("-h");
+    void should_show_help_when_help_option_is_passed() {
+        int exitCode = runWithArgs("-h");
 
-        assertHelpPrinted(existCode);
+        assertHelpPrinted(exitCode);
     }
 
     @Test
-    public void should_show_help_when_long_help_option_is_passed() {
-        int existCode = runWithArgs("--help");
+    void should_show_help_when_long_help_option_is_passed() {
+        int exitCode = runWithArgs("--help");
 
-        assertHelpPrinted(existCode);
+        assertHelpPrinted(exitCode);
     }
 
     @Test
-    public void should_show_help_when_no_parameter_is_passed() {
-        int existCode = runWithArgs();
+    void should_show_help_when_no_parameter_is_passed() {
+        int exitCode = runWithArgs();
 
-        assertHelpPrinted(existCode);
+        assertHelpPrinted(exitCode);
     }
 
     @Test
-    public void should_call_test_on_JavaFmt_when_test_option_is_passed() {
+    void should_call_test_on_JavaFmt_when_test_option_is_passed() {
         runWithArgs("-t");
 
         verify(javaFmt, only()).test();
     }
 
-    private void assertHelpPrinted(final int existCode) {
-        assertEquals(0, existCode);
+    private void assertHelpPrinted(final int exitCode) {
+        assertThat(exitCode).isEqualTo(0);
 
         String helpMsg = writer.toString();
-        assertTrue(helpMsg, helpMsg.contains("Usage"));
-        assertTrue(helpMsg, helpMsg.contains("display this help message"));
-        assertTrue(helpMsg, helpMsg.contains("file or directory, in which case all *.java files are formatted."));
+        assertThat(helpMsg).contains("Usage");
+        assertThat(helpMsg).contains("display this help message");
+        assertThat(helpMsg).contains("file or directory, in which case all *.java files are formatted.");
     }
 
     private int runWithArgs(String... args) {
