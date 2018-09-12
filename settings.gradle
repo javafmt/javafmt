@@ -1,0 +1,3 @@
+rootProject.name = 'javafmt'
+include ':javafmt-core'
+include ':javafmt-cli'

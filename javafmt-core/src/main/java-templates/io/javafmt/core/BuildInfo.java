@@ -21,15 +21,15 @@ public final class BuildInfo {
     /**
      * The release version of this JavaFmt build.
      */
-    public static final String VERSION = "${build.version}";
+    public static final String VERSION = "@build.version@";
 
     /**
      * The Git hash this JavaFmt version was build from.
      */
-    public static final String GIT_HASH = "${build.hash}";
+    public static final String GIT_HASH = "@build.hash@";
 
     /**
      * The timestamp of the build.
      */
-    public static final String TIMESTAMP = "${build.timestamp}";
+    public static final String TIMESTAMP = "@build.timestamp@";
 }
