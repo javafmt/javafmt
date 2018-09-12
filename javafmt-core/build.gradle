@@ -13,9 +13,23 @@ task generateSources(type: Copy) {
     into "$buildDir/generated-src"
     filter(ReplaceTokens, tokens: [
             'build.version': project.version,
-            'build.hash': 'bbb',
-            'build.timestamp': Instant.now().toString()
+            'build.hash': buildHash(),
+            'build.timestamp': buildTimestamp()
     ])
 }
+
+def buildTimestamp() {
+    return Instant.now().toString()
+}
+
+def buildHash() {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'rev-parse', 'HEAD'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 compileJava.source "$buildDir/generated-src"
 compileJava.dependsOn generateSources
