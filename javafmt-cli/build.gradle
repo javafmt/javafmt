@@ -1,3 +1,12 @@
+jar {
+    manifest {
+        attributes 'Main-Class': 'io.javafmt.cli.Main'
+    }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
 dependencies {
     compile project(':javafmt-core')
     compile group: 'info.picocli', name: 'picocli', version: '3.0.0-beta-2'
