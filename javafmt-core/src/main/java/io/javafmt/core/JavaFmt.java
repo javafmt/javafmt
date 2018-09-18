@@ -19,11 +19,11 @@ package io.javafmt.core;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 
 /**
  * JavaFmt API main entry point.
@@ -33,7 +33,7 @@ import java.nio.charset.StandardCharsets;
  * It has to operations:
  *
  * <ul>
- * <li>fomat - format the given files, writing the formatted result back.</li>
+ * <li>format - format the given files, writing the formatted result back.</li>
  * <li>test  - test whether the given files are well formatted.</li>
  * </ul>
  * </p>
@@ -43,7 +43,7 @@ import java.nio.charset.StandardCharsets;
 public class JavaFmt {
 
     /**
-     * Tests whether the given files are well formatted.
+     * Tests whether the given files or files inside the given directories are well formatted.
      *
      * <p>
      * <strong>Note:</strong> This method assumes UTF-8 encoding.
@@ -58,7 +58,7 @@ public class JavaFmt {
     }
 
     /**
-     * Tests whether the given files are well formatted using the given Charset.
+     * Tests whether the given files or files inside the given directories are well formatted using the given Charset.
      *
      * @param charset the Charset to use for reading the files.
      * @param files   the files to test.
@@ -73,6 +73,10 @@ public class JavaFmt {
     }
 
     private boolean testFile(final Charset encoding, final File file) {
+        if (file.isDirectory()) {
+            Collection<File> files = FileUtils.listFiles(file, new String[] { "java" }, true);
+            return test(encoding, files.toArray(new File[0]));
+        }
         try {
             String fileContent = FileUtils.readFileToString(file, encoding);
             return test(fileContent);
@@ -83,12 +87,11 @@ public class JavaFmt {
 
     private boolean test(String fileContent) {
         CompilationUnit parsed = JavaParser.parse(fileContent);
-
         return fileContent.equals(parsed.toString());
     }
 
     /**
-     * Format the given files overriding their contents with the formatting result.
+     * Format the given files or files inside the given directories overriding their contents with the formatting result.
      *
      * <p>
      * <strong>Note:</strong> This method assumes UTF-8 encoding.
@@ -102,10 +105,10 @@ public class JavaFmt {
     }
 
     /**
-     * Format the given files using the given Charset.
+     * Format the given files or files inside the given directories using the given Charset.
      *
      * @param charset the Charset to use for reading the files.
-     * @param files the files to format.
+     * @param files   the files to format.
      */
     public void format(Charset charset, File... files) {
         for (File file : files) {
@@ -114,6 +117,10 @@ public class JavaFmt {
     }
 
     private void formatFile(Charset charset, File file) {
+        if (file.isDirectory()) {
+            Collection<File> files = FileUtils.listFiles(file, new String[] { "java" }, true);
+            format(charset, files.toArray(new File[0]));
+        }
         try {
             String fileContent = FileUtils.readFileToString(file, charset);
             String formatted = format(fileContent);
@@ -125,7 +132,6 @@ public class JavaFmt {
 
     private String format(String fileContent) {
         CompilationUnit parsed = JavaParser.parse(fileContent);
-
         return parsed.toString();
     }
 }
