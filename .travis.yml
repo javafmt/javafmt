@@ -18,3 +18,6 @@ matrix:
   # Java 11 "Oracle JDK" (not yet provided by Travis CI)
   - env: JDK='Oracle JDK 11'
     install: . ./target/install-jdk.sh -F 11 -L BCL
+
+after_script:
+  - java -jar javafmt-cli/build/libs/javafmt-cli-0.1.0-SNAPSHOT.jar --test .
